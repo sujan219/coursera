@@ -38,15 +38,40 @@ public class MergingTables {
     int maximumNumberOfRows = -1;
 
     void merge(Table destination, Table source) {
-        Table realDestination = destination.getParent();
+        /* Table realDestination = destination.getParent();
         Table realSource = source.getParent();
         if (realDestination == realSource) {
             return;
-        }
+        } */
         // merge two components here
         // use rank heuristic
         // update maximumNumberOfRows
+		Table desParent = find(destination);
+		Table souParent = find(source);
+		
+		if(souParent != desParent){
+			if(souParent.rank < desParent.rank){
+				souParent.parent = desParent;
+				desParent.numberOfRows += souParent.numberOfRows;
+				maximumNumberOfRows = Math.max(maximumNumberOfRows, desParent.numberOfRows);
+			}else{
+				desParent.parent = souParent;
+				souParent.numberOfRows += desParent.numberOfRows;
+				if(souParent.rank == desParent.rank){
+					souParent.rank++;
+				}
+				maximumNumberOfRows = Math.max(maximumNumberOfRows, souParent.numberOfRows);
+			}
+		}
     }
+	
+	Table find(Table t){
+		if(t.getParent() == t){
+			return t;
+		}else{
+			return find(t.getParent());
+		}
+	}
 
     public void run() {
         int n = reader.nextInt();
